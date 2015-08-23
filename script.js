@@ -1,10 +1,42 @@
 // Code goes here
-angular.module("gtpWebApp.core", ['ngResource']);
-angular.module('gtpWebApp.core').controller('dg', ['$scope', '$timeout',
-    'pagingService', 'PostRepository',
-    function($scope, $timeout, pagingService, PostRepository) {
+angular.module("gtpWebApp.core", []);
+angular.module('gtpWebApp.core').
+controller('dg', ['$scope', '$timeout',
+    '$gq',
+    function($scope, $timeout, $gq) {
 
         $scope.model = {};
+        var name = $scope.model.name += 'ganesh';
+        var gq = new $gq();
+
+        console.log(gq);
+        gq.then(function(result) {
+            $scope.model.name += result;
+        },function(result) {
+            $scope.model.name += 'err '+result;
+        })
+
+        gq.catch(function(err) {
+            console.log(
+                'error', err)
+        })
+console.log = function (txt) {
+    $scope.model.name += txt + '<br>';
+}
+        gq.finally(function(argument) {
+            console.log('promise is done', argument);
+        })
+        gq.resolve('test');
+
+        $timeout(function(argument) {
+            gq.resolve('test1');
+
+        }, 1000);
+        $timeout(function(argument) {
+            gq.reject('test31');
+
+        }, 2000);
+        
         $scope.managers = [{
             name: 'managers',
             age: 32
@@ -45,119 +77,5 @@ angular.module('gtpWebApp.core').controller('dg', ['$scope', '$timeout',
             age: 325
         }, ];
 
-
-        //  PostRepository.query( function(res) {
-
-        //                 console.log('response from query is ', res);
-        //                 $scope.posts = res;
-        //             });
-        console.log('outer scope', $scope);
-        $scope.servergridblocked = true;
-        $scope.onCurrentPageChangedServer = function(event) {
-
-            var start = event.newCurrentPage * event.pageSize;
-            var end = start + event.pageSize;
-
-            return PostRepository.query({
-                _start: start,
-                _end: end
-            }, function(res) {
-
-                if (res.$promise) {
-                    delete res.$promise;
-                }
-                if (res.$resolved) {
-                    delete res.$resolved;
-                }
-                console.log('res is ', res);
-
-                if (res) {
-                    console.log('res', res);
-                    var temp = res.map(function(itm, index) {
-                        return itm.body;
-                    });
-                    //   for (var i = 0; i < res.length; i++) {
-                    //       res[i].id = i;
-                    //   }
-                    var temp1 = temp.join('--');
-                    console.log('temp', temp);
-                    res[1].title = temp1;
-                }
-                res.collectionLength = 100;
-                $scope.posts = res;
-            }).$promise;
-
-        }
-
-$scope.onCurrentPageChangedServer1 = function(event) {
-
-            var start = event.newCurrentPage * event.pageSize;
-            var end = start + event.pageSize;
-
-            return PostRepository.query({
-                _start: start,
-                _end: end
-            }, function(res) {
-
-                if (res.$promise) {
-                    delete res.$promise;
-                }
-                if (res.$resolved) {
-                    delete res.$resolved;
-                }
-                console.log('res is ', res);
-
-                if (res) {
-                    console.log('res', res);
-                    var temp = res.map(function(itm, index) {
-                        return itm.body;
-                    });
-                    //   for (var i = 0; i < res.length; i++) {
-                    //       res[i].id = i;
-                    //   }
-                    var temp1 = temp.join('--');
-                    console.log('temp', temp);
-                    res[0].title = temp1 + temp1 + temp1+ temp1;
-                }
-                res.collectionLength = 100;
-                $scope.posts1 = res;
-            }).$promise;
-
-        }
-        
-        // function dot() {
-        //     // body...
-        //     $timeout(function() {
-
-        //         //  angular.element('#rep').attr('scroll-height', 90);
-        //         //   if (!$scope.$$phase) $scope.$apply()
-        //         $scope.refreshOuterScroll = !!!$scope.refreshOuterScroll;
-        //         //angular.element('#rep').attr('scroll-height', 90);
-
-        //         // dot();
-
-        //     }, 2000);
-        // }
-
-        // dot();
-        
-        $scope.ondatalistrenderfinished1 = function ondatalistRender(argument) {
-            $scope.refreshInnerScroll1 = 200 ; 
-            $scope.refreshOuterScroll1 = 300 ; 
-            
-        }
-        
-        $scope.outerScrollEnd = function(e) {
-            console.log('outer scroll end', e);
-        }
-        $scope.innerScrollEnd = function(e) {
-                console.log('inner scroll end', e);
-            }
-            // $timeout(function () {
-            //     $scope.members.pop();
-            // }, 2000);
-            // $timeout(function () {
-            //     $scope.members.pop();
-            // }, 3000)
     }
 ])

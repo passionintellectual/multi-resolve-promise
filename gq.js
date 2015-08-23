@@ -1,31 +1,65 @@
 angular.module('gtpWebApp.core')
     .factory('$gq', ['$timeout', '$q', function($timeout, $q) {
         var $gq = {};
-        
-        var gq = function(key) {
-            if ($gq[key]) {
-                return $gq[key];
-            }
 
-            this.key = key;
-            $gq[key] = this;
-            
-            this.q  = $q.defer();
+        function getNewDefer() {
+            this.qCollection = this.qCollection || [];
+            var oldQ = this.q;
+            this.qCollection.push(oldQ);
+            this.q = $q.defer();
+            var thisobj = this;
+            this.thenFunctions.forEach(function(itm, index) {
+                thisobj.q.promise.then(itm[0], itm[1]);
+            });
+            this.catchFunctions.forEach(function(itm, index) {
+                thisobj.q.promise.catch(itm);
+            });
+            this.finallyFunctions.forEach(function(itm, index) {
+                thisobj.q.promise.finally(itm);
+            });
+        }
+        var gq = function(key) {
+
+
+            this.thenFunctions = this.thenFunctions || [];
+            this.catchFunctions = this.catchFunctions || [];
+            this.finallyFunctions = this.finallyFunctions || [];
+            var thisobj = this;
+            getNewDefer.bind(this)();
+
         };
 
-         
-        
-        gq.prototype.resolve= function (value) {
-            // body...
-            this.q.resolve(value);
+
+
+        gq.prototype.resolve = function(value) {
+            // body... promise.$$state.status === 1 // resolved
+            //promise.$$state.status === 2 // rejected
+              this.q.resolve(value);
+             
+                getNewDefer.bind(this)();
+
+             
+          
         }
-        
-        gq.prototype.then = function (argument) {
+
+
+        gq.prototype.then = function(fn, errorFn) {
             // body...
-            this.q.then(argument);
+            this.q.promise.then(fn, errorFn);
+
+            this.thenFunctions.push([fn, errorFn]);
         }
-        
-        
-        return gq;
-        
+
+        gq.prototype.reject = function(val) {
+            this.q.reject(val);
+        }
+        gq.prototype.catch = function(fn) {
+            this.q.promise.catch(fn)
+        }
+
+        gq.prototype.finally = function(fn) {
+            this.q.promise.finally(fn)
+        }
+       return gq;
+
     }]);
