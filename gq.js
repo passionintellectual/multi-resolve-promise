@@ -52,6 +52,7 @@ angular.module('gtpWebApp.core')
 
         gq.prototype.reject = function(val) {
             this.q.reject(val);
+            
         }
         gq.prototype.catch = function(fn) {
             this.q.promise.catch(fn)
