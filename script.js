@@ -37,6 +37,12 @@ console.log = function (txt) {
 
         }, 2000);
         
+         $timeout(function(argument) {
+              
+            gq.resolve('test after reject');
+
+        }, 3000);
+        
         $scope.managers = [{
             name: 'managers',
             age: 32
