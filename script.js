@@ -10,20 +10,20 @@ controller('dg', ['$scope', '$timeout',
         var gq = new $gq();
 
         console.log(gq);
-        gq.then(function(result) {
+        gq.promise().then(function(result) {
             $scope.model.name += result;
         },function(result) {
             $scope.model.name += 'err '+result;
         })
 
-        gq.catch(function(err) {
+        gq.promise().catch(function(err) {
             console.log(
                 'error', err)
         })
 console.log = function (txt) {
     $scope.model.name += txt + '<br>';
 }
-        gq.finally(function(argument) {
+        gq.promise().finally(function(argument) {
             console.log('promise is done', argument);
         })
         gq.resolve('test');
